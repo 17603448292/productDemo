@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       https://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       https://www.springframework.org/schema/aop/spring-aop.xsd
+">
+    <!--配置数据源-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource "
+          destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/smbms?characterEncoding=utf-8"/>
+        <property name="username" value="root"/>
+        <property name="password" value="root"/>
+    </bean>
+
+    <!--配置SqlsessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--引用数据源组件-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--引用mybatis配置文件-->
+        <property name="configLocation" value="mybatis-config.xml"/>
+        <!--配置sql映射文件（mapper文件）-->
+        <!--<property name="mapperLocations">-->
+        <!--<list>-->
+        <!--<value>mapper/*.xml</value>-->
+        <!--</list>-->
+        <!--</property>-->
+    </bean>
+
+    <!--定义事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!---->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <!--定义属性，申明事务规则-->
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
+    <context:component-scan base-package="com.kaida.service"/>
+    <!---->
+    <!--&lt;!&ndash;业务层注入事务&ndash;&gt;-->
+    <!--<aop:config>-->
+        <!--&lt;!&ndash;切入点&ndash;&gt;-->
+        <!--<aop:pointcut id="poinCut" expression="execution(* com.kaida.service..*.*(..))"/>-->
+        <!--&lt;!&ndash;事务增强与切入点组合&ndash;&gt;-->
+        <!--<aop:advisor advice-ref="txAdvice" pointcut-ref="poinCut"/>-->
+    <!--</aop:config>-->
+    <!--sqlsessionTemplate-->
+    <!--<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">-->
+    <!--<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>-->
+    <!--</bean>-->
+
+
+    <!--&lt;!&ndash;配置UserDao&ndash;&gt;-->
+    <!--<bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
+    <!--<property name="mapperInterface" value="com.kaida.dao.UserMapper"/>-->
+    <!--<property name="sqlSessionFactory" ref="sqlSessionFactory"/>-->
+    <!--</bean>-->
+    <!--&lt;!&ndash;配置UserService&ndash;&gt;-->
+    <!--<bean id="userService" class="com.kaida.service.impl.UserServiceImpl">-->
+    <!--<property name="userMapper" ref="userMapper"/>-->
+    <!--</bean>-->
+    <!---->
+    <!--&lt;!&ndash;配置bill&ndash;&gt;-->
+    <!--<bean id="billMapper2" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
+    <!--<property name="mapperInterface" value="com.kaida.dao.BillMapper"/>-->
+    <!--<property name="sqlSessionFactory" ref="sqlSessionFactory"/>-->
+    <!--</bean>-->
+    <!--&lt;!&ndash;配置BillService&ndash;&gt;-->
+    <!--<bean id="billService" class="com.kaida.service.impl.BillServiceImpl">-->
+    <!--<property name="billMapper" ref="billMapper2"/>-->
+    <!--</bean>-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.kaida.dao"/>
+    </bean>
+    <!--&lt;!&ndash;ProviderDaoImpl&ndash;&gt;-->
+    <!--<bean id="providerDao" class="com.kaida.dao.impl.ProviderDaoImpl">-->
+    <!--&lt;!&ndash;注入sqlsessionTemplate&ndash;&gt;-->
+    <!--<property name="sqlSessionTemplate" ref="sqlSessionTemplate"/>-->
+    <!--</bean>-->
+    <!--&lt;!&ndash;ProviderServiceImpl&ndash;&gt;-->
+    <!--<bean id="providerService" class="com.kaida.service.impl.ProviderServiceImpl">-->
+    <!--<property name="providerDao" ref="providerDao"/>-->
+    <!--</bean>-->
+</beans>

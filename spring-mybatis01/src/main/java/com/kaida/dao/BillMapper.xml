@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kaida.dao.BillMapper">
+    <resultMap id="bill" type="com.kaida.entity.Bill">
+        <result property="billCode" column="billCode"/>
+        <result property="productName" column="productName"/>
+        <result property="providerName" column="proName"/>
+        <result property="totalPrice" column="totalPrice"/>
+        <result property="isPayment" column="isPayment"/>
+        <result property="productName" column="creationDate"/>
+    </resultMap>
+
+    <select id="selectBillByProductName" resultMap="bill" >
+        select billCode,productName,proName,totalPrice,isPayment,b.creationDate
+        from smbms_bill b
+        left join smbms_provider p on b.providerId = p.id
+        where productName like concat('%',#{productName},'%')
+    </select>
+</mapper>
